@@ -1,0 +1,34 @@
+name: Daily Weather Message
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # 6:00 rano w Polsce (czas UTC +2 = 4:00 UTC)
+  workflow_dispatch:  # pozwala ręcznie odpalić
+
+jobs:
+  send-weather:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run bot
+        env:
+          ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          FROM: ${{ secrets.FROM }}
+          TO: ${{ secrets.TO }}
+          API_KEY: ${{ secrets.API_KEY }}
+          CITY: ${{ secrets.CITY }}
+        run: python main.py
+            
