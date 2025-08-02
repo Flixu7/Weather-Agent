@@ -1,0 +1,32 @@
+name: Send Weather on WhatsApp
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # Codziennie o 4:00 UTC = 6:00 czasu polskiego (CEST)
+  workflow_dispatch:  # pozwala uruchomić ręcznie z GitHub UI
+
+jobs:
+  send-weather:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Send WhatsApp weather message
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM: ${{ secrets.TWILIO_FROM }}
+          MY_NUMBER: ${{ secrets.MY_NUMBER }}
+        run: |
+          python send_weather.py
